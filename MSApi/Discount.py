@@ -1,9 +1,9 @@
 from typing import Optional
 
-from MSApi import ObjectMS, SubObjectMS
-from MSApi import ProductFolder
-from MSApi import PriceType
-from MSApi import Meta
+from MSApi.ObjectMS import ObjectMS, SubObjectMS
+from MSApi.ProductFolder import ProductFolder
+from MSApi.PriceType import PriceType
+from MSApi.Meta import Meta
 
 
 class SpecialPrice(SubObjectMS):

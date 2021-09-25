@@ -1,4 +1,5 @@
 from MSApi.exceptions import *
+from MSApi.properties import *
 import requests
 
 
@@ -55,7 +56,8 @@ class MSLowApi:
 
     @classmethod
     # @check_login
-    def __auch_post(cls, request, **kwargs):
+    def auch_post(cls, request, **kwargs):
+        # print(f"POST: {request}")
         return requests.post(f"{ms_url}/{request}",
                              headers={"Authorization": f"Bearer {cls.__authorizer.token}",
                                       "Content-Type": "application/json"},
@@ -63,7 +65,9 @@ class MSLowApi:
 
     @classmethod
     def auch_get(cls, request, **kwargs):
+        # print(f"GET: {request}")
         return cls._auch_get_by_href(f"{ms_url}/{request}", **kwargs)
+
 
     @classmethod
     # @check_login

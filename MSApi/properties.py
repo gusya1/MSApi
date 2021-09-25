@@ -30,25 +30,25 @@ class Filter(object):
         return filter_
 
     @classmethod
-    def mr(cls, parameter, data):
+    def gt(cls, parameter, data):
         filter_ = Filter()
         filter_.__append_filter(">", parameter, data)
         return filter_
 
     @classmethod
-    def ls(cls, parameter, data):
+    def lt(cls, parameter, data):
         filter_ = Filter()
         filter_.__append_filter("<", parameter, data)
         return filter_
 
     @classmethod
-    def me(cls, parameter, data):
+    def gte(cls, parameter, data):
         filter_ = Filter()
         filter_.__append_filter(">=", parameter, data)
         return filter_
 
     @classmethod
-    def le(cls, parameter, data):
+    def lte(cls, parameter, data):
         filter_ = Filter()
         filter_.__append_filter("<=", parameter, data)
         return filter_

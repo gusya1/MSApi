@@ -1,16 +1,22 @@
-from MSApi import MSLowApi, error_handler
 
-from MSApi import Meta
-from MSApi import Organization
-from MSApi import Template
-from MSApi import Product
-from MSApi import Service
-from MSApi import ProductFolder
-from MSApi import Discount, SpecialPriceDiscount, AccumulationDiscount
-from MSApi import PriceType
-from MSApi import CompanySettings
-from MSApi import Bundle
-from MSApi import Variant
+import requests
+from MSApi.MSLowApi import MSLowApi, error_handler
+
+from MSApi.Meta import Meta
+from MSApi.Organization import Organization, Account
+from MSApi.Template import Template
+from MSApi.Product import Product
+from MSApi.Service import Service
+from MSApi.ProductFolder import ProductFolder
+from MSApi.Discount import Discount, SpecialPriceDiscount, AccumulationDiscount
+from MSApi.PriceType import PriceType
+from MSApi.CompanySettings import CompanySettings
+from MSApi.Bundle import Bundle
+from MSApi.Variant import Variant
+from MSApi.Employee import Employee
+from MSApi.documents.CustomerOrder import CustomerOrder
+
+from MSApi.exceptions import *
 
 
 class MSApi(MSLowApi):
@@ -26,7 +32,11 @@ class MSApi(MSLowApi):
         'service': Service,
         'companysettings': CompanySettings,
         'bundle': Bundle,
-        'variant': Variant
+        'variant': Variant,
+        'employee': Employee,
+        'account': Account,
+        'customerorder': CustomerOrder
+
     }
 
     @classmethod
@@ -144,6 +154,13 @@ class MSApi(MSLowApi):
             yield SpecialPriceDiscount(row)
 
     @classmethod
+    def gen_customer_orders(cls, **kwargs):
+        response = cls.auch_get('entity/customerorder', **kwargs)
+        error_handler(response)
+        for row in response.json().get('rows'):
+            yield CustomerOrder(row)
+
+    @classmethod
     def get_product_by_id(cls, product_id, **kwargs):
         response = cls.auch_get(f'entity/product/{product_id}', **kwargs)
         error_handler(response)
@@ -151,7 +168,7 @@ class MSApi(MSLowApi):
 
     @classmethod
     def set_products(cls, json_data):
-        response = cls.__auch_post(f'entity/product/', json=json_data)
+        response = cls.auch_post(f'entity/product/', json=json_data)
         error_handler(response)
 
     @classmethod
@@ -174,7 +191,7 @@ class MSApi(MSLowApi):
 
         }
 
-        response = cls.__auch_post(f"/entity/product/{product.get_id()}/export", json=request_json)
+        response = cls.auch_post(f"/entity/product/{product.get_id()}/export", json=request_json)
         if response.status_code == 303:
             url = response.json().get('Location')
             file_response = requests.get(url)

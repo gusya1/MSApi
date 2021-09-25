@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='MSApi',
-      version='0.0.0',
+      version='0.0.1',
       description='Python API for manage MoySklad',
       packages=['MSApi'],
       author_email='serheos@gmail.com',
