@@ -71,8 +71,17 @@ class MSLowApi:
 
     @classmethod
     # @check_login
-    def _auch_get_by_href(cls, request, search: Search = None, filters: Filter = None, expand: Expand = None, **kwargs):
+    def _auch_get_by_href(cls, request,
+                          limit: int = None,
+                          offset: int = None,
+                          search: Search = None,
+                          filters: Filter = None,
+                          expand: Expand = None, **kwargs):
         params = []
+        if limit is not None:
+            params.append("limit={}".format(limit))
+        if offset is not None:
+            params.append("offset={}".format(offset))
         if search is not None:
             params.append(str(search))
         if filters is not None:

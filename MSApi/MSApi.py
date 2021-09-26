@@ -15,6 +15,7 @@ from MSApi.Bundle import Bundle
 from MSApi.Variant import Variant
 from MSApi.Employee import Employee
 from MSApi.documents.CustomerOrder import CustomerOrder
+from MSApi.properties import Expand
 
 from MSApi.exceptions import *
 
@@ -78,87 +79,51 @@ class MSApi(MSLowApi):
 
     @classmethod
     def gen_organizations(cls, **kwargs):
-        response = cls.auch_get('entity/organization', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Organization(row)
+        return cls.gen_objects('entity/organization', Organization, **kwargs)
 
     @classmethod
     def gen_variants(cls, **kwargs):
-        response = cls.auch_get('entity/variant', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Variant(row)
+        return cls.gen_objects('entity/variant', Variant, **kwargs)
 
     @classmethod
     def gen_services(cls, **kwargs):
-        response = cls.auch_get('entity/service', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Service(row)
+        return cls.gen_objects('entity/service', Service, **kwargs)
 
     @classmethod
     def gen_bundles(cls, **kwargs):
-        response = cls.auch_get('entity/bundle', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Bundle(row)
+        return cls.gen_objects('entity/bundle', Bundle, **kwargs)
 
     @classmethod
     def gen_assortment(cls, **kwargs):
-        response = cls.auch_get('entity/assortment', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield cls.get_object_by_json(row)
+        return cls.gen_objects('entity/assortment', lambda row_json: cls.get_object_by_json(row_json), **kwargs)
 
     @classmethod
     def gen_customtemplates(cls, **kwargs):
-        response = cls.auch_get('entity/assortment/metadata/customtemplate', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Template(row)
+        return cls.gen_objects('entity/assortment/metadata/customtemplate', Template, **kwargs)
 
     @classmethod
     def gen_products(cls, **kwargs):
-        response = cls.auch_get('entity/product', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Product(row)
+        return cls.gen_objects('entity/product', Product, **kwargs)
 
     @classmethod
     def gen_productfolders(cls, **kwargs):
-        response = cls.auch_get('entity/productfolder', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield ProductFolder(row)
+        return cls.gen_objects('entity/productfolder', ProductFolder, **kwargs)
 
     @classmethod
     def gen_discounts(cls, **kwargs):
-        response = cls.auch_get('entity/discount', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield Discount(row)
+        return cls.gen_objects('entity/discount', Discount, **kwargs)
 
     @classmethod
     def gen_special_price_discounts(cls, **kwargs):
-        response = cls.auch_get('entity/specialpricediscount', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield SpecialPriceDiscount(row)
+        return cls.gen_objects('entity/specialpricediscount', SpecialPriceDiscount, **kwargs)
 
     @classmethod
     def gen_accumulation_discounts(cls, **kwargs):
-        response = cls.auch_get('entity/accumulationdiscount', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield SpecialPriceDiscount(row)
+        return cls.gen_objects('entity/accumulationdiscount', AccumulationDiscount, **kwargs)
 
     @classmethod
     def gen_customer_orders(cls, **kwargs):
-        response = cls.auch_get('entity/customerorder', **kwargs)
-        error_handler(response)
-        for row in response.json().get('rows'):
-            yield CustomerOrder(row)
+        return cls.gen_objects('entity/customerorder', CustomerOrder, **kwargs)
 
     @classmethod
     def get_product_by_id(cls, product_id, **kwargs):
@@ -202,3 +167,29 @@ class MSApi(MSLowApi):
             raise MSApiHttpException(response)
 
         return data
+
+    @classmethod
+    def gen_objects(cls, request, obj, limit: int = None, expand: Expand = None, **kwargs):
+
+        local_limit = 1000
+        if limit is not None and limit < 1000:
+            local_limit = limit
+
+        if expand is not None:
+            local_limit = 100
+
+        offset = 0
+        while True:
+            response = cls.auch_get(request, limit=local_limit, offset=offset, expand=expand, **kwargs)
+            error_handler(response)
+            row_counter = 0
+            for row in response.json().get('rows'):
+                yield obj(row)
+                row_counter += 1
+            if row_counter == 0:
+                break
+            if limit is None:
+                continue
+            limit -= local_limit
+            if limit < local_limit:
+                local_limit = limit
