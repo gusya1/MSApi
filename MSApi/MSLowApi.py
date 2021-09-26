@@ -2,6 +2,7 @@ from MSApi.exceptions import *
 from MSApi.properties import *
 import requests
 
+from datetime import datetime
 
 ms_url = "https://online.moysklad.ru/api/remap/1.2"
 
@@ -12,6 +13,11 @@ def error_handler(response: requests.Response, expected_code=200):
         return
 
     raise MSApiHttpException(response)
+
+
+def string_to_datetime(string):
+    value = datetime.strptime('%Y-%m-%d %H:%M:%S.%f', string + "000")
+    return value
 
 
 class Authorizer:

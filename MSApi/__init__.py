@@ -1,6 +1,8 @@
 from MSApi.Assortment import *
+from MSApi.Attribute import *
 from MSApi.Bundle import *
 from MSApi.CompanySettings import *
+from MSApi.Counterparty import *
 from MSApi.Discount import *
 from MSApi.Employee import *
 from MSApi.Meta import *
@@ -11,6 +13,7 @@ from MSApi.Organization import *
 from MSApi.PriceType import *
 from MSApi.Product import *
 from MSApi.ProductFolder import *
+from MSApi.Project import *
 from MSApi.Service import *
 from MSApi.State import *
 from MSApi.SubObjectMS import *

@@ -45,7 +45,7 @@ class Organization(ObjectMS):
 
     @check_init
     def get_group(self) -> Optional[Meta]:
-        return self._json.get('shared')
+        return self._json.get('group')
 
     @check_init
     def get_name(self) -> str:
