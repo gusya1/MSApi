@@ -1,5 +1,6 @@
-from MSApi.ObjectMS import ObjectMS, check_init
+from typing import Optional
 
+from MSApi.ObjectMS import ObjectMS, check_init
 
 class Employee(ObjectMS):
     def __init__(self, json):
@@ -15,7 +16,7 @@ class Employee(ObjectMS):
 
     @check_init
     def get_owner(self):
-        return Employee(self._json.get('owner'))
+        return self._get_optional_object('owner', Employee)
 
     @check_init
     def get_shared(self) -> bool:

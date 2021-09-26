@@ -5,9 +5,9 @@ from MSApi.ObjectMS import ObjectMS, check_init
 from MSApi.MSLowApi import MSLowApi, error_handler, string_to_datetime
 from MSApi.State import State
 from MSApi.Organization import Account
-from MSApi import Project
-from MSApi import Attribute
-from MSApi import Counterparty
+from MSApi.Project import Project
+from MSApi.Attribute import Attribute
+from MSApi.Counterparty import Counterparty
 
 
 class CustomerOrder(ObjectMS):
@@ -86,6 +86,12 @@ class CustomerOrder(ObjectMS):
     def gen_attributes(self):
         for attr in self._json.get('attributes', []):
             yield Attribute(attr)
+
+    def get_attribute_by_name(self, name: str) -> Optional[Attribute]:
+        for attr in self.gen_attributes():
+            if attr.get_name() == name:
+                return attr
+        return None
 
     @check_init
     def get_project(self) -> Optional[Project]:

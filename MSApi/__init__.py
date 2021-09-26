@@ -1,5 +1,6 @@
 from MSApi.Assortment import *
 from MSApi.Attribute import *
+from MSApi.AttributeInfo import *
 from MSApi.Bundle import *
 from MSApi.CompanySettings import *
 from MSApi.Counterparty import *

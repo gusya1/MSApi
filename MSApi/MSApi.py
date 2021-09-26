@@ -188,6 +188,7 @@ class MSApi(MSLowApi):
                 row_counter += 1
             if row_counter == 0:
                 break
+            offset += local_limit
             if limit is None:
                 continue
             limit -= local_limit

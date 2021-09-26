@@ -1,6 +1,6 @@
 from typing import Optional
 
-from MSApi import Employee
+from MSApi.Employee import Employee
 from MSApi.ObjectMS import ObjectMS, check_init
 
 
@@ -18,7 +18,7 @@ class Counterparty(ObjectMS):
 
     @check_init
     def get_owner(self) -> Optional[Employee]:
-        return Employee(self._json.get('owner'))
+        return self._get_optional_object('owner', Employee)
 
     @check_init
     def get_shared(self) -> bool:
