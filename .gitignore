@@ -6,5 +6,6 @@ __pycache__
 MSApi.egg-info
 dist
 
+sandbox.py
 settings.ini
 saves.json

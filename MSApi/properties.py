@@ -1,4 +1,6 @@
 
+# deprecated
+
 class Expand:
 
     def __init__(self, *args):
@@ -26,55 +28,55 @@ class Filter(object):
     @classmethod
     def eq(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("=", parameter, data)
+        filter_._append_filter("=", parameter, data)
         return filter_
 
     @classmethod
     def gt(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter(">", parameter, data)
+        filter_._append_filter(">", parameter, data)
         return filter_
 
     @classmethod
     def lt(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("<", parameter, data)
+        filter_._append_filter("<", parameter, data)
         return filter_
 
     @classmethod
     def gte(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter(">=", parameter, data)
+        filter_._append_filter(">=", parameter, data)
         return filter_
 
     @classmethod
     def lte(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("<=", parameter, data)
+        filter_._append_filter("<=", parameter, data)
         return filter_
 
     @classmethod
     def ne(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("!=", parameter, data)
+        filter_._append_filter("!=", parameter, data)
         return filter_
 
     @classmethod
     def siml(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("~=", parameter, data)
+        filter_._append_filter("~=", parameter, data)
         return filter_
 
     @classmethod
     def simr(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("=~", parameter, data)
+        filter_._append_filter("=~", parameter, data)
         return filter_
 
     @classmethod
     def sim(cls, parameter, data):
         filter_ = Filter()
-        filter_.__append_filter("~", parameter, data)
+        filter_._append_filter("~", parameter, data)
         return filter_
 
         # ['=', '>', '<', '>=', '<=', '!=', '~', '~=', '=~']
@@ -89,5 +91,5 @@ class Filter(object):
         self.filters += other.filters
         return self
 
-    def __append_filter(self, operator, parameter, data):
+    def _append_filter(self, operator, parameter, data):
         self.filters.append(f"{parameter}{operator}{data}")
