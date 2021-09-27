@@ -20,6 +20,19 @@ from MSApi.properties import Expand
 from MSApi.exceptions import *
 
 
+def caching(f):
+    cache = [None]
+
+    def decorate(cls, cached=False, *args, **kwargs):
+        if cached is True:
+            if cache[0] is None:
+                cache[0] = list(f(cls, *args, **kwargs))
+            return (a for a in cache[0])
+        else:
+            return f(cls, *args, **kwargs)
+    return decorate
+
+
 class MSApi(MSLowApi):
 
     __objects_dict = {
@@ -78,50 +91,62 @@ class MSApi(MSLowApi):
         return cls.get_object_by_json(response.json())
 
     @classmethod
+    @caching
     def gen_organizations(cls, **kwargs):
         return cls.gen_objects('entity/organization', Organization, **kwargs)
 
     @classmethod
+    @caching
     def gen_variants(cls, **kwargs):
         return cls.gen_objects('entity/variant', Variant, **kwargs)
 
     @classmethod
+    @caching
     def gen_services(cls, **kwargs):
         return cls.gen_objects('entity/service', Service, **kwargs)
 
     @classmethod
+    @caching
     def gen_bundles(cls, **kwargs):
         return cls.gen_objects('entity/bundle', Bundle, **kwargs)
 
     @classmethod
+    @caching
     def gen_assortment(cls, **kwargs):
         return cls.gen_objects('entity/assortment', lambda row_json: cls.get_object_by_json(row_json), **kwargs)
 
     @classmethod
+    @caching
     def gen_customtemplates(cls, **kwargs):
         return cls.gen_objects('entity/assortment/metadata/customtemplate', Template, **kwargs)
 
     @classmethod
+    @caching
     def gen_products(cls, **kwargs):
         return cls.gen_objects('entity/product', Product, **kwargs)
 
     @classmethod
+    @caching
     def gen_productfolders(cls, **kwargs):
         return cls.gen_objects('entity/productfolder', ProductFolder, **kwargs)
 
     @classmethod
+    @caching
     def gen_discounts(cls, **kwargs):
         return cls.gen_objects('entity/discount', Discount, **kwargs)
 
     @classmethod
+    @caching
     def gen_special_price_discounts(cls, **kwargs):
         return cls.gen_objects('entity/specialpricediscount', SpecialPriceDiscount, **kwargs)
 
     @classmethod
+    @caching
     def gen_accumulation_discounts(cls, **kwargs):
         return cls.gen_objects('entity/accumulationdiscount', AccumulationDiscount, **kwargs)
 
     @classmethod
+    @caching
     def gen_customer_orders(cls, **kwargs):
         return cls.gen_objects('entity/customerorder', CustomerOrder, **kwargs)
 
@@ -194,3 +219,5 @@ class MSApi(MSLowApi):
             limit -= local_limit
             if limit < local_limit:
                 local_limit = limit
+            if local_limit == 0:
+                break
