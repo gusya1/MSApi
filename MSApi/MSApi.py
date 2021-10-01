@@ -171,12 +171,12 @@ class MSApi(MSLowApi):
 
         request_json = {
             'organization': {
-                'meta': organization.get_meta()
+                'meta': organization.get_meta().get_json()
             },
             'count': 1,
             'salePrice': sale_price.get_json(),
             'template': {
-                'meta': template.get_meta()
+                'meta': template.get_meta().get_json()
             }
 
         }
