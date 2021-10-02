@@ -74,6 +74,14 @@ class MSLowApi:
         # print(f"GET: {request}")
         return cls._auch_get_by_href(f"{ms_url}/{request}", **kwargs)
 
+    @classmethod
+    def auch_put(cls, request, **kwargs):
+        # print(f"GET: {request}")
+        return requests.put(f"{ms_url}/{request}",
+                            headers={"Authorization": f"Bearer {cls.__authorizer.token}",
+                                     "Content-Type": "application/json"},
+                            **kwargs)
+
 
     @classmethod
     # @check_login

@@ -8,6 +8,7 @@ from MSApi.Organization import Account
 from MSApi.Project import Project
 from MSApi.Attribute import Attribute
 from MSApi.Counterparty import Counterparty
+from MSApi.documents.Demand import Demand
 
 
 class CustomerOrder(ObjectMS):
@@ -103,6 +104,11 @@ class CustomerOrder(ObjectMS):
         if result is not None:
             return Account(result)
         return None
+
+    @check_init
+    def gen_demands(self):
+        for attr in self._json.get('demands', []):
+            yield Demand(attr)
 
 # sum	Int	Сумма Заказа в установленной валюте	Только для чтения	да	да	нет
 # rate	Object	Валюта. Подробнее тут	—	да	да	нет
