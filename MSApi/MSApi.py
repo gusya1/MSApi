@@ -162,7 +162,7 @@ class MSApi(MSLowApi):
         error_handler(response)
 
     @classmethod
-    def load_label(cls, product: Product, organization: Organization, template: Template, sale_price=None):
+    def load_label(cls, product: Product, organization: Organization, template: Template, sale_price=None, **kwargs):
 
         if not sale_price:
             sale_price = next(product.gen_sale_prices(), None)
@@ -181,7 +181,7 @@ class MSApi(MSLowApi):
 
         }
 
-        response = cls.auch_post(f"/entity/product/{product.get_id()}/export", json=request_json)
+        response = cls.auch_post(f"/entity/product/{product.get_id()}/export", json=request_json, **kwargs)
         if response.status_code == 303:
             url = response.json().get('Location')
             file_response = requests.get(url)
