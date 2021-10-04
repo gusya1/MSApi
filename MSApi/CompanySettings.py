@@ -1,8 +1,10 @@
 from enum import Enum
 
+from MSApi.MSLowApi import MSLowApi, error_handler
 from MSApi.ObjectMS import ObjectMS, check_init
 from MSApi.Meta import Meta
 from MSApi.PriceType import PriceType
+from MSApi.CustomEntity import CustomEntity
 
 
 class DiscountStrategy(Enum):
@@ -36,4 +38,12 @@ class CompanySettings(ObjectMS):
         Если проставлен true, будет установлена сквозная нумерация за всю историю,
         иначе нумерация документов будет начинаться заново каждый календарный год."""
         return bool(self._json.get('globalOperationNumbering'))
+
+    @check_init
+    def gen_custom_entities(self):
+        response = MSLowApi.auch_get("context/companysettings/metadata")
+        error_handler(response)
+        for entity_json in response.json().get('customEntities', []):
+            yield CustomEntity(entity_json)
+
 

@@ -20,5 +20,6 @@ from MSApi.State import *
 from MSApi.SubObjectMS import *
 from MSApi.Template import *
 from MSApi.Variant import *
+from MSApi.CustomEntity import *
 from MSApi.documents import *
 from MSApi.properties import *
