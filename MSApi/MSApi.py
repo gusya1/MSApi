@@ -1,6 +1,6 @@
 
 import requests
-from MSApi.MSLowApi import MSLowApi, error_handler
+from MSApi.MSLowApi import MSLowApi, error_handler, caching
 
 from MSApi.Meta import Meta
 from MSApi.Organization import Organization, Account
@@ -15,22 +15,8 @@ from MSApi.Bundle import Bundle
 from MSApi.Variant import Variant
 from MSApi.Employee import Employee
 from MSApi.documents.CustomerOrder import CustomerOrder
-from MSApi.properties import Expand
 
 from MSApi.exceptions import *
-
-
-def caching(f):
-    cache = [None]
-
-    def decorate(cls, cached=False, *args, **kwargs):
-        if cached is True:
-            if cache[0] is None:
-                cache[0] = list(f(cls, *args, **kwargs))
-            return (a for a in cache[0])
-        else:
-            return f(cls, *args, **kwargs)
-    return decorate
 
 
 class MSApi(MSLowApi):
@@ -192,32 +178,3 @@ class MSApi(MSLowApi):
             raise MSApiHttpException(response)
 
         return data
-
-    @classmethod
-    def gen_objects(cls, request, obj, limit: int = None, expand: Expand = None, **kwargs):
-
-        local_limit = 1000
-        if limit is not None and limit < 1000:
-            local_limit = limit
-
-        if expand is not None:
-            local_limit = 100
-
-        offset = 0
-        while True:
-            response = cls.auch_get(request, limit=local_limit, offset=offset, expand=expand, **kwargs)
-            error_handler(response)
-            row_counter = 0
-            for row in response.json().get('rows'):
-                yield obj(row)
-                row_counter += 1
-            if row_counter == 0:
-                break
-            offset += local_limit
-            if limit is None:
-                continue
-            limit -= local_limit
-            if limit < local_limit:
-                local_limit = limit
-            if local_limit == 0:
-                break
