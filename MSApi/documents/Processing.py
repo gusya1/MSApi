@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
 
-from MSApi.documents.DocumentMS import DocumentMS
+from MSApi.documents.DocumentMS import DocumentMS, check_init
 from MSApi.MSLowApi import MSLowApi, error_handler, caching
 from MSApi.State import State
 from MSApi.documents.ProcessingOrder import ProcessingOrder
@@ -39,3 +39,7 @@ class Processing(DocumentMS):
         response = MSLowApi.auch_post(f'entity/demand', json=self.get_json(), **kwargs)
         error_handler(response)
         self._json = response.json()
+
+    @check_init
+    def get_state(self) -> Optional[State]:
+        return self._get_optional_object('state', State)

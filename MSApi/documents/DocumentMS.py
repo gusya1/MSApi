@@ -63,10 +63,6 @@ class DocumentMS(ObjectMS):
         return self._get_optional_object('project', Project)
 
     @check_init
-    def get_state(self) -> Optional[State]:
-        return self._get_optional_object('state', State)
-
-    @check_init
     def gen_attributes(self):
         for attr in self._json.get('attributes', []):
             yield Attribute(attr)
