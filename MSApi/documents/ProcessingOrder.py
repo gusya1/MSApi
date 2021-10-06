@@ -7,6 +7,7 @@ from MSApi.State import State
 from MSApi.Organization import Account
 from MSApi.Project import Project
 from MSApi.Attribute import Attribute
+from MSApi.documents import Processing
 
 
 class ProcessingOrder(ObjectMS):
@@ -95,3 +96,8 @@ class ProcessingOrder(ObjectMS):
         if result is not None:
             return Account(result)
         return None
+
+    @check_init
+    def gen_processings(self):
+        for attr in self._json.get('processings', []):
+            yield Processing(attr)
