@@ -57,10 +57,8 @@ class MSApi(MSLowApi):
     def get_object_by_meta(cls, meta: Meta):
         obj_type = cls.__objects_dict.get(meta.get_type())
         if obj_type is None:
-            raise MSApiException(f"Unknown object type \"{meta.get_type()}\"")
-        response = cls._auch_get_by_href(meta.get_href())
-        error_handler(response)
-        return obj_type(response.json())
+            raise MSApiException("Object type \"{}\" not found".format(meta.get_type()))
+        return obj_type({'meta': meta.get_json()})
 
     @classmethod
     def get_object_by_json(cls, json_data):

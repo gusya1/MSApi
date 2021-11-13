@@ -1,5 +1,6 @@
 from typing import Union
 
+
 from MSApi.ObjectMS import ObjectMS, check_init
 
 

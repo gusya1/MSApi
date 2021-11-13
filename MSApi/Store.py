@@ -1,12 +1,18 @@
+import warnings
+
 from MSApi.MSLowApi import MSLowApi, caching
 from MSApi.ObjectMS import ObjectMS, check_init
+from MSApi.mixin.GenListMixin import GenerateListMixin
 
 
-class Store(ObjectMS):
+class Store(ObjectMS,
+            GenerateListMixin):
+    _type_name = 'store'
 
     @classmethod
     @caching
     def generate(cls, **kwargs):
+        warnings.warn("deprecated", DeprecationWarning)
         return MSLowApi.gen_objects('entity/store', Store, **kwargs)
 
     def __init__(self, json):

@@ -2,9 +2,12 @@
 from typing import Optional
 from MSApi.ObjectMS import ObjectMS, check_init
 from MSApi.Employee import Employee
+from MSApi.mixin.GenListMixin import GenerateListMixin
 
 
-class Project(ObjectMS):
+class Project(ObjectMS, GenerateListMixin):
+    _type_name = 'project'
+
     def __init__(self, json):
         super().__init__(json)
 

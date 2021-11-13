@@ -8,7 +8,7 @@ class MSApiHttpException(MSApiException):
         self.errors = []
         self.status_code = response.status_code
         if self.status_code in [503]:
-            self.errors.append(str(response.text()))
+            self.errors.append(str(response.text))
         else:
             json = response.json()
             if json is list:
@@ -20,4 +20,4 @@ class MSApiHttpException(MSApiException):
                     self.errors.append(json_error.get('error'))
 
     def __str__(self):
-        return 'search={0}'.format("\n".join(self.errors))
+        return '{}'.format("\n".join(self.errors))

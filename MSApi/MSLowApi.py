@@ -1,6 +1,12 @@
+import logging
+
+from requests import Session
+from requests.adapters import HTTPAdapter, Retry
+
 from MSApi.exceptions import *
 from MSApi.properties import *
 import requests
+import urllib.parse
 
 from datetime import datetime
 
@@ -23,7 +29,7 @@ def string_to_datetime(string):
 def caching(f):
     cache = [None]
 
-    def decorate(cls, cached=False, *args, **kwargs):
+    def decorate(cls, *args, cached=False, **kwargs):
         if cached is True:
             if cache[0] is None:
                 cache[0] = list(f(cls, *args, **kwargs))
@@ -37,11 +43,12 @@ class Authorizer:
     token = None
 
     @classmethod
-    def login(cls, login: str, password: str):
+    def login(cls, login: str, password: str, session=Session()):
         import base64
         auch_base64 = base64.b64encode(f"{login}:{password}".encode('utf-8')).decode('utf-8')
-        response = requests.post(f"{ms_url}/security/token",
-                                 headers={"Authorization": f"Basic {auch_base64}"})
+
+        response = session.post(f"{ms_url}/security/token",
+                                headers={"Authorization": f"Basic {auch_base64}"})
         error_handler(response, 201)
         cls.token = str(response.json()["access_token"])
 
@@ -50,7 +57,16 @@ class Authorizer:
         return cls.token is not None
 
 
+def _create_session():
+    session = Session()
+    session.mount('https://',
+                  HTTPAdapter(max_retries=Retry(total=5, status_forcelist=[500, 503])))
+    return session
+
+
 class MSLowApi:
+
+    __session = _create_session()
     __authorizer = Authorizer()
 
     @classmethod
@@ -59,7 +75,7 @@ class MSLowApi:
 
     @classmethod
     def login(cls, login: str, password: str):
-        cls.__authorizer.login(login, password)
+        cls.__authorizer.login(login, password, cls.__session)
 
     @classmethod
     def check_login(cls, f):
@@ -76,24 +92,27 @@ class MSLowApi:
     @classmethod
     # @check_login
     def auch_post(cls, request, **kwargs):
-        # print(f"POST: {request}")
-        return requests.post(f"{ms_url}/{request}",
-                             headers={"Authorization": f"Bearer {cls.__authorizer.token}",
-                                      "Content-Type": "application/json"},
-                             **kwargs)
+        logging.debug(f"MSApi POST: {request}")
+        request = urllib.parse.quote(request)
+        return cls.__session.post(f"{ms_url}/{request}",
+                                  headers={"Authorization": f"Bearer {cls.__authorizer.token}",
+                                           "Content-Type": "application/json"},
+                                  **kwargs)
 
     @classmethod
     def auch_get(cls, request, **kwargs):
-        # print(f"GET: {request}")
+        logging.debug(f"MSApi GET: {request}")
+        urllib.parse.quote(request)
         return cls._auch_get_by_href(f"{ms_url}/{request}", **kwargs)
 
     @classmethod
     def auch_put(cls, request, **kwargs):
-        # print(f"GET: {request}")
-        return requests.put(f"{ms_url}/{request}",
-                            headers={"Authorization": f"Bearer {cls.__authorizer.token}",
-                                     "Content-Type": "application/json"},
-                            **kwargs)
+        logging.debug(f"MSApi PUT: {request}")
+        request = urllib.parse.quote(request)
+        return cls.__session.put(f"{ms_url}/{request}",
+                                 headers={"Authorization": f"Bearer {cls.__authorizer.token}",
+                                          "Content-Type": "application/json"},
+                                 **kwargs)
 
     @classmethod
     # @check_login
@@ -101,6 +120,7 @@ class MSLowApi:
                           limit: int = None,
                           offset: int = None,
                           search: Search = None,
+                          orders: Order = None,
                           filters: Filter = None,
                           expand: Expand = None, **kwargs):
         params = []
@@ -112,16 +132,18 @@ class MSLowApi:
             params.append(str(search))
         if filters is not None:
             params.append(str(filters))
+        if orders is not None:
+            params.append(str(orders))
         if expand is not None:
             params.append(str(expand))
         params_str = ""
         if params:
             params_str = f"?{'&'.join(params)}"
 
-        return requests.get(f"{request}{params_str}",
-                            headers={"Authorization": f"Bearer {cls.__authorizer.token}",
-                                     "Content-Type": "application/json"},
-                            **kwargs)
+        return cls.__session.get(f"{request}{params_str}",
+                                 headers={"Authorization": f"Bearer {cls.__authorizer.token}",
+                                          "Content-Type": "application/json"},
+                                 **kwargs)
 
     @classmethod
     def gen_objects(cls, request, obj, limit: int = None, expand: Expand = None, **kwargs):

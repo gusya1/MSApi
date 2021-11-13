@@ -7,7 +7,8 @@ from MSApi.State import State
 from MSApi.Organization import Account
 from MSApi.Project import Project
 from MSApi.Attribute import Attribute
-from MSApi.documents import Processing, ProcessingPlan
+from MSApi.documents.Processing import Processing
+from MSApi.documents.ProcessingPlan import ProcessingPlan
 
 
 class ProcessingOrder(ObjectMS):
@@ -100,6 +101,10 @@ class ProcessingOrder(ObjectMS):
     @check_init
     def get_processing_plan(self) -> ProcessingPlan:
         return ProcessingPlan(self._json.get('processingPlan'))
+
+    @check_init
+    def get_quantity(self) -> int:
+        return int(self._json.get('quantity'))
 
     @check_init
     def gen_processings(self):

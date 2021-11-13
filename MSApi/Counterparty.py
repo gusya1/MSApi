@@ -2,9 +2,12 @@ from typing import Optional
 
 from MSApi.Employee import Employee
 from MSApi.ObjectMS import ObjectMS, check_init
+from MSApi.mixin.GenListMixin import GenerateListMixin
 
 
-class Counterparty(ObjectMS):
+class Counterparty(ObjectMS, GenerateListMixin):
+    _type_name = "counterparty"
+
     def __init__(self, json):
         super().__init__(json)
 
@@ -32,6 +35,16 @@ class Counterparty(ObjectMS):
     def get_actual_address(self) -> Optional[str]:
         return self._json.get('actualAddress')
 
+    @check_init
+    def get_email(self) -> Optional[str]:
+        return self._json.get('email')
+
+    @check_init
+    def get_phone(self) -> Optional[str]:
+        return self._json.get('phone')
+
+
+
 
 # meta	Meta	Метаданные Контрагента	—	да	нет
 #  ! id	UUID	ID Контрагента	Только для чтения	да	нет
@@ -47,8 +60,8 @@ class Counterparty(ObjectMS):
 # externalCode	String(255)	Внешний код Контрагента	—	да	нет
 # archived	Boolean	Добавлен ли Контрагент в архив	—	да	нет
 # created	DateTime	Момент создания	—	да	нет
-# email	String(255)	Адрес электронной почты	—	нет	нет
-# phone	String(255)	Номер городского телефона	—	нет	нет
+# ! email	String(255)	Адрес электронной почты	—	нет	нет
+# ! phone	String(255)	Номер городского телефона	—	нет	нет
 # fax	String(255)	Номер факса	—	нет	нет
 #  ! actualAddress	String(255)	Фактический адрес Контрагента	—	нет	нет
 # actualAddressFull	Object	Фактический адрес Контрагента с детализацией по отдельным полям. Подробнее тут	—	нет	нет

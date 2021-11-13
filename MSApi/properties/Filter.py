@@ -1,3 +1,5 @@
+import urllib.parse
+
 
 class Filter(object):
 
@@ -37,6 +39,13 @@ class Filter(object):
     def sim(cls, parameter, data):
         return cls._append_filter(Filter(), "~", parameter, data)
 
+    @classmethod
+    def exists(cls, parameter, exists=True):
+        operator = '!=' if exists else '='
+        f = Filter()
+        f.filters.append(f"{parameter}{operator}")
+        return f
+
     def __init__(self):
         self.filters = []
 
@@ -49,5 +58,5 @@ class Filter(object):
 
     @staticmethod
     def _append_filter(filter_, operator, parameter, data):
-        filter_.filters.append(f"{parameter}{operator}{data}")
+        filter_.filters.append(f"{parameter}{operator}{urllib.parse.quote(str(data))}")
         return filter_

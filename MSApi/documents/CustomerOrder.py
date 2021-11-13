@@ -9,9 +9,17 @@ from MSApi.Project import Project
 from MSApi.Attribute import Attribute
 from MSApi.Counterparty import Counterparty
 from MSApi.documents.Demand import Demand
+from MSApi.mixin.AttributeMixin import AttributeMixin
+from MSApi.mixin.GenListMixin import GenerateListMixin
+from MSApi.mixin.RequestByIdMixin import RequestByIdMixin
 
 
-class CustomerOrder(ObjectMS):
+class CustomerOrder(ObjectMS,
+                    AttributeMixin,
+                    GenerateListMixin,
+                    RequestByIdMixin):
+
+    _type_name = 'customerorder'
 
     @classmethod
     def gen_states(cls):

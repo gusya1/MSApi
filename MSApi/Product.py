@@ -1,11 +1,22 @@
 from typing import Optional
 
+from MSApi.mixin import AttributeMixin, SalePricesMixin
 from MSApi.Assortment import Assortment
 from MSApi.ProductFolder import ProductFolder
 from MSApi.ObjectMS import check_init
+from MSApi.mixin.GenListMixin import GenerateListMixin
+from MSApi.mixin.RequestByIdMixin import RequestByIdMixin
+from MSApi.mixin.ProductfolderMixin import ProductfolderMixin
 
 
-class Product(Assortment):
+class Product(Assortment,
+              AttributeMixin,
+              SalePricesMixin,
+              RequestByIdMixin,
+              GenerateListMixin,
+              ProductfolderMixin):
+
+    _type_name = 'product'
 
     def __init__(self, json):
         super().__init__(json)
@@ -16,14 +27,6 @@ class Product(Assortment):
     @check_init
     def get_description(self) -> Optional[str]:
         return self._json.get('description')
-
-    @check_init
-    def get_productfolder(self) -> Optional[ProductFolder]:
-        """Группа Товара"""
-        result = self._json.get('productFolder')
-        if result is None:
-            return None
-        return ProductFolder(result)
 
     @check_init
     def get_variants_count(self) -> int:

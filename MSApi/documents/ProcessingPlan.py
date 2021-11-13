@@ -3,8 +3,6 @@ from datetime import datetime
 
 from MSApi.documents.DocumentMS import DocumentMS
 from MSApi.MSLowApi import MSLowApi, error_handler, caching
-from MSApi.State import State
-from MSApi.documents.ProcessingOrder import ProcessingOrder
 
 
 class ProcessingPlan(DocumentMS):

@@ -1,3 +1,4 @@
+from MSApi import MSLowApi, error_handler, SalePricesMixin
 from MSApi.ObjectMS import ObjectMS
 from MSApi.Assortment import Assortment
 from MSApi.Product import Product
@@ -17,7 +18,14 @@ class Characteristic(ObjectMS):
         return self._json.get('value')
 
 
-class Variant(Assortment):
+class Variant(Assortment, SalePricesMixin):
+
+    @classmethod
+    def gen_characteristics_list(cls):
+        response = MSLowApi.auch_get("entity/variant/metadata")
+        error_handler(response)
+        for characteristic_json in response.json()["characteristics"]:
+            yield Characteristic(characteristic_json)
 
     def __init__(self, json):
         super().__init__(json)
