@@ -2,22 +2,21 @@ from typing import Optional
 
 from MSApi.Employee import Employee
 from MSApi.ObjectMS import ObjectMS, check_init
+
 from MSApi.mixin.GenListMixin import GenerateListMixin
+from MSApi.mixin.CreateNewMixin import CreateNewMixin
+from MSApi.mixin.AccountIdMixin import AccountIdMixin
+from MSApi.mixin.StateMixin import StateMixin
+from MSApi.mixin.NameMixin import NameMixin
 
 
-class Counterparty(ObjectMS, GenerateListMixin):
+class Counterparty(ObjectMS,
+                   GenerateListMixin,
+                   CreateNewMixin,
+                   AccountIdMixin,
+                   StateMixin,
+                   NameMixin):
     _type_name = "counterparty"
-
-    def __init__(self, json):
-        super().__init__(json)
-
-    @check_init
-    def get_id(self) -> str:
-        return self._json.get('id')
-
-    @check_init
-    def get_account_id(self) -> str:
-        return self._json.get('accountId')
 
     @check_init
     def get_owner(self) -> Optional[Employee]:
@@ -26,10 +25,6 @@ class Counterparty(ObjectMS, GenerateListMixin):
     @check_init
     def get_shared(self) -> bool:
         return self._json.get('shared')
-
-    @check_init
-    def get_name(self) -> str:
-        return self._json.get('name')
 
     @check_init
     def get_actual_address(self) -> Optional[str]:

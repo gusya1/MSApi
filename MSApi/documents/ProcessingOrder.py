@@ -13,6 +13,8 @@ from MSApi.documents.ProcessingPlan import ProcessingPlan
 
 class ProcessingOrder(ObjectMS):
 
+    _type_name = 'processingorder'
+
     @classmethod
     @caching
     def generate(cls, **kwargs):

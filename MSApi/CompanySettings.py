@@ -1,6 +1,7 @@
 from enum import Enum
 
 from MSApi.MSLowApi import MSLowApi, error_handler
+from MSApi.Currency import Currency
 from MSApi.ObjectMS import ObjectMS, check_init
 from MSApi.Meta import Meta
 from MSApi.PriceType import PriceType
@@ -13,13 +14,33 @@ class DiscountStrategy(Enum):
 
 
 class CompanySettings(ObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
+    _type_name = 'companysettings'
+
+    @classmethod
+    def get_company_settings(cls):
+        """Запрос на получение Настроек компании."""
+        response = MSLowApi.auch_get('context/companysettings')
+        error_handler(response)
+        return CompanySettings(response.json())
+
+    @classmethod
+    def get_default_price_type(cls) -> PriceType:
+        """Получить тип цены по умолчанию"""
+        response = MSLowApi.auch_get('context/companysettings/pricetype/default')
+        error_handler(response)
+        return PriceType(response.json())
+
+    @classmethod
+    def gen_custom_entities(cls):
+        response = MSLowApi.auch_get("context/companysettings/metadata")
+        error_handler(response)
+        for entity_json in response.json().get('customEntities', []):
+            yield CustomEntity(entity_json)
 
     @check_init
-    def get_currency(self) -> Meta:
-        """Метаданные стандартной валюты"""
-        return Meta(self._json.get('currency'))
+    def get_currency(self) -> Currency:
+        """Cтандартная валюта"""
+        return Currency(self._json.get('currency'))
 
     @check_init
     def gen_price_types(self):
@@ -39,11 +60,6 @@ class CompanySettings(ObjectMS):
         иначе нумерация документов будет начинаться заново каждый календарный год."""
         return bool(self._json.get('globalOperationNumbering'))
 
-    @check_init
-    def gen_custom_entities(self):
-        response = MSLowApi.auch_get("context/companysettings/metadata")
-        error_handler(response)
-        for entity_json in response.json().get('customEntities', []):
-            yield CustomEntity(entity_json)
+
 
 

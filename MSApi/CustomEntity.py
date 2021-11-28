@@ -7,12 +7,6 @@ from MSApi.MSLowApi import MSLowApi, error_handler, string_to_datetime
 
 
 class CustomEntityElement(ObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
-
-    @check_init
-    def get_id(self) -> str:
-        return self._json.get('id')
 
     @check_init
     def get_account_id(self) -> str:

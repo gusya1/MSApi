@@ -24,3 +24,5 @@ from MSApi.CustomEntity import *
 from MSApi.Store import *
 from MSApi.documents import *
 from MSApi.properties import *
+from MSApi.Webhook import *
+from MSApi.Task import *

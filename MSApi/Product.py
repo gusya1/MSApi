@@ -7,6 +7,8 @@ from MSApi.ObjectMS import check_init
 from MSApi.mixin.GenListMixin import GenerateListMixin
 from MSApi.mixin.RequestByIdMixin import RequestByIdMixin
 from MSApi.mixin.ProductfolderMixin import ProductfolderMixin
+from MSApi.mixin.NameMixin import NameMixin
+from MSApi.mixin.CreateNewMixin import CreateNewMixin
 
 
 class Product(Assortment,
@@ -14,7 +16,9 @@ class Product(Assortment,
               SalePricesMixin,
               RequestByIdMixin,
               GenerateListMixin,
-              ProductfolderMixin):
+              ProductfolderMixin,
+              NameMixin,
+              CreateNewMixin):
 
     _type_name = 'product'
 

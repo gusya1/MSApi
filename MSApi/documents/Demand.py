@@ -8,15 +8,19 @@ from typing import Optional
 from datetime import datetime
 from MSApi.documents import CustomerOrder
 
+from MSApi.mixin.StateMixin import StateMixin
+from MSApi.mixin.AttributeMixin import AttributeMixin
+from MSApi.mixin.GenListMixin import GenerateListMixin
+from MSApi.mixin.CreateNewMixin import CreateNewMixin
 
-class Demand(ObjectMS):
 
-    @classmethod
-    def gen_states(cls):
-        response = MSLowApi.auch_get(f"entity/demand/metadata")
-        error_handler(response)
-        for states_json in response.json()["states"]:
-            yield State(states_json)
+class Demand(ObjectMS,
+             StateMixin,
+             GenerateListMixin,
+             AttributeMixin,
+             CreateNewMixin):
+
+    _type_name = 'demand'
 
     def __init__(self, json):
         super().__init__(json)
@@ -78,42 +82,19 @@ class Demand(ObjectMS):
         return self._get_optional_object('agent', Counterparty)
 
     @check_init
-    def get_state(self) -> Optional[State]:
-        return self._get_optional_object('state', State)
-
-    @check_init
-    def gen_attributes(self):
-        for attr in self._json.get('attributes', []):
-            yield Attribute(attr)
-
-    def get_attribute_by_name(self, name: str) -> Optional[Attribute]:
-        for attr in self.gen_attributes():
-            if attr.get_name() == name:
-                return attr
-        return None
-
-    @check_init
     def get_organization_account(self) -> Optional[Account]:
         result = self._json.get('organizationAccount')
         if result is not None:
             return Account(result)
         return None
 
-
-def create_demand(demand: Demand, **kwargs) -> Demand:
-    response = MSLowApi.auch_post(f'entity/demand', json=demand.get_json(), **kwargs)
-    error_handler(response)
-    return Demand(response.json())
-
-
-def get_demand_template_by_customer_order(customer_order: CustomerOrder, **kwargs) -> Demand:
-    json_data = {
-        "customerOrder": {
-            "meta": customer_order.get_meta().get_json()
+    @classmethod
+    def get_demand_template_by_customer_order(cls, customer_order: CustomerOrder, **kwargs):
+        json_data = {
+            "customerOrder": {
+                "meta": customer_order.get_meta().get_json()
+            }
         }
-    }
-    response = MSLowApi.auch_put(f'entity/demand/new', json=json_data, **kwargs)
-    error_handler(response)
-    return Demand(response.json())
-
-
+        response = MSLowApi.auch_put('entity/{}/new'.format(cls._type_name), json=json_data, **kwargs)
+        error_handler(response)
+        return Demand(response.json())

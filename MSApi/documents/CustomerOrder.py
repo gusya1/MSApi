@@ -2,38 +2,27 @@ from typing import Optional
 from datetime import datetime
 
 from MSApi.ObjectMS import ObjectMS, check_init
-from MSApi.MSLowApi import MSLowApi, error_handler, string_to_datetime
-from MSApi.State import State
+from MSApi.MSLowApi import string_to_datetime
 from MSApi.Organization import Account
 from MSApi.Project import Project
-from MSApi.Attribute import Attribute
 from MSApi.Counterparty import Counterparty
-from MSApi.documents.Demand import Demand
+import MSApi.documents
 from MSApi.mixin.AttributeMixin import AttributeMixin
 from MSApi.mixin.GenListMixin import GenerateListMixin
 from MSApi.mixin.RequestByIdMixin import RequestByIdMixin
+from MSApi.mixin.StateMixin import StateMixin
 
 
 class CustomerOrder(ObjectMS,
                     AttributeMixin,
                     GenerateListMixin,
-                    RequestByIdMixin):
+                    RequestByIdMixin,
+                    StateMixin):
 
     _type_name = 'customerorder'
 
-    @classmethod
-    def gen_states(cls):
-        response = MSLowApi.auch_get(f"entity/customerorder/metadata")
-        error_handler(response)
-        for states_json in response.json()["states"]:
-            yield State(states_json)
-
     def __init__(self, json):
         super().__init__(json)
-
-    @check_init
-    def get_id(self) -> str:
-        return self._json.get('id')
 
     @check_init
     def get_account_id(self) -> str:
@@ -88,21 +77,6 @@ class CustomerOrder(ObjectMS,
         return self._get_optional_object('agent', Counterparty)
 
     @check_init
-    def get_state(self) -> Optional[State]:
-        return self._get_optional_object('state', State)
-
-    @check_init
-    def gen_attributes(self):
-        for attr in self._json.get('attributes', []):
-            yield Attribute(attr)
-
-    def get_attribute_by_name(self, name: str) -> Optional[Attribute]:
-        for attr in self.gen_attributes():
-            if attr.get_name() == name:
-                return attr
-        return None
-
-    @check_init
     def get_project(self) -> Optional[Project]:
         return self._get_optional_object('project', Project)
 
@@ -116,7 +90,7 @@ class CustomerOrder(ObjectMS,
     @check_init
     def gen_demands(self):
         for attr in self._json.get('demands', []):
-            yield Demand(attr)
+            yield MSApi.documents.Demand(attr)
 
 # sum	Int	Сумма Заказа в установленной валюте	Только для чтения	да	да	нет
 # rate	Object	Валюта. Подробнее тут	—	да	да	нет

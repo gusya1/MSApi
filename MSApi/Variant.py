@@ -3,22 +3,22 @@ from MSApi.ObjectMS import ObjectMS
 from MSApi.Assortment import Assortment
 from MSApi.Product import Product
 
+from MSApi.mixin.NameMixin import NameMixin
+from MSApi.mixin.GenListMixin import GenerateListMixin
 
-class Characteristic(ObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
 
-    def get_id(self) -> str:
-        return self._json.get('id')
-
-    def get_name(self) -> str:
-        return self._json.get('name')
+class Characteristic(ObjectMS,
+                     NameMixin):
 
     def get_value(self) -> str:
         return self._json.get('value')
 
 
-class Variant(Assortment, SalePricesMixin):
+class Variant(Assortment,
+              NameMixin,
+              SalePricesMixin,
+              GenerateListMixin):
+    _type_name = 'variant'
 
     @classmethod
     def gen_characteristics_list(cls):
@@ -26,9 +26,6 @@ class Variant(Assortment, SalePricesMixin):
         error_handler(response)
         for characteristic_json in response.json()["characteristics"]:
             yield Characteristic(characteristic_json)
-
-    def __init__(self, json):
-        super().__init__(json)
 
     def get_product(self):
         return Product(self._json.get('product'))

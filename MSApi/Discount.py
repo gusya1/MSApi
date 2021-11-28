@@ -1,14 +1,19 @@
 from typing import Optional
 
+from MSApi.MSApi import MSApi
+
 from MSApi.ObjectMS import ObjectMS, SubObjectMS
 from MSApi.ProductFolder import ProductFolder
 from MSApi.PriceType import PriceType
 from MSApi.Meta import Meta
 
+from MSApi.mixin.GenListMixin import GenerateListMixin
+from MSApi.mixin.CreateNewMixin import CreateNewMixin
+from MSApi.mixin.NameMixin import NameMixin
+from MSApi.mixin.AccountIdMixin import AccountIdMixin
+
 
 class SpecialPrice(SubObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
 
     def get_price_type(self) -> PriceType:
         return PriceType(self._json.get('priceType'))
@@ -21,8 +26,6 @@ class SpecialPrice(SubObjectMS):
 
 
 class DiscountLevel(SubObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
 
     def get_amount(self) -> float:
         """Сумма накоплений"""
@@ -36,18 +39,12 @@ class DiscountLevel(SubObjectMS):
         return float(discount) / 100
 
 
-class Discount(ObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
-
-    def get_id(self) -> str:
-        return self._json.get('id')
-
-    def get_account_id(self) -> str:
-        return self._json.get('accountId')
-
-    def get_name(self) -> str:
-        return self._json.get('name')
+class Discount(ObjectMS,
+               GenerateListMixin,
+               CreateNewMixin,
+               NameMixin,
+               AccountIdMixin):
+    _type_name = 'discount'
 
     def is_active(self) -> bool:
         return bool(self._json.get('active'))
@@ -70,12 +67,11 @@ class Discount(ObjectMS):
         if objects is None:
             return
         for obj in objects:
-            yield Meta(obj.get('meta'))
+            yield MSApi.get_object_by_meta(Meta(obj.get('meta')))
 
 
 class SpecialPriceDiscount(Discount):
-    def __init__(self, json):
-        super().__init__(json)
+    _type_name = 'specialpricediscount'
 
     def gen_productfolders(self):
         """Группы товаров, к которым применяется скидка, если применяется не ко всем товарам"""
@@ -104,8 +100,7 @@ class SpecialPriceDiscount(Discount):
 
 
 class AccumulationDiscount(Discount):
-    def __init__(self, json):
-        super().__init__(json)
+    _type_name = 'accumulationdiscount'
 
     def gen_productfolders(self):
         """Группы товаров, к которым применяется скидка, если применяется не ко всем товарам"""

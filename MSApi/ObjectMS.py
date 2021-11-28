@@ -22,8 +22,16 @@ class ObjectMS(SubObjectMS):
     def get_meta(self):
         return Meta(self._json.get('meta'))
 
+    @check_init
+    def get_id(self) -> str:
+        return self._json.get('id')
+
     def get_json(self):
         return self._json
 
     def set_json(self, json):
         self._json = json.copy()
+
+    @classmethod
+    def get_typename(cls):
+        return cls._type_name

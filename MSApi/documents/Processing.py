@@ -1,7 +1,8 @@
 from typing import Optional
 from datetime import datetime
 
-from MSApi.documents import DocumentMS, check_init
+from MSApi.ObjectMS import check_init
+from MSApi.documents.DocumentMS import DocumentMS
 from MSApi.MSLowApi import MSLowApi, error_handler, caching
 from MSApi.State import State
 

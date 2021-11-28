@@ -60,7 +60,7 @@ class Authorizer:
 def _create_session():
     session = Session()
     session.mount('https://',
-                  HTTPAdapter(max_retries=Retry(total=5, status_forcelist=[500, 503])))
+                  HTTPAdapter(max_retries=Retry(total=10, status_forcelist=[500, 503])))
     return session
 
 

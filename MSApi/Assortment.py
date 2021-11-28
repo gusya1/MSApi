@@ -1,15 +1,17 @@
-from MSApi.ObjectMS import ObjectMS, check_init
+from MSApi.MSLowApi import caching, MSLowApi
+from MSApi.Template import Template
+from MSApi.ObjectMS import ObjectMS
+
+from MSApi.mixin.RequestLabelMixin import RequestLabelMixin
+from MSApi.mixin.GenListMixin import GenerateListMixin
 
 
-class Assortment(ObjectMS):
+class Assortment(ObjectMS,
+                 GenerateListMixin,
+                 RequestLabelMixin):
+    _type_name = 'assortment'
 
-    def __init__(self, json):
-        super().__init__(json)
-
-    @check_init
-    def get_id(self) -> str:
-        return self._json.get('id')
-
-    @check_init
-    def get_name(self) -> str:
-        return self._json.get('name')
+    @classmethod
+    @caching
+    def gen_customtemplates(cls, **kwargs):
+        return MSLowApi.gen_objects('entity/assortment/metadata/customtemplate', Template, **kwargs)

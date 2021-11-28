@@ -4,18 +4,15 @@ from datetime import datetime
 from MSApi.documents.DocumentMS import DocumentMS
 from MSApi.MSLowApi import MSLowApi, error_handler, caching
 
+from MSApi.mixin.GenListMixin import GenerateListMixin
+from MSApi.mixin.CreateNewMixin import CreateNewMixin
+from MSApi.mixin.NameMixin import NameMixin
 
-class ProcessingPlan(DocumentMS):
 
-    @classmethod
-    @caching
-    def generate(cls, **kwargs):
-        return MSLowApi.gen_objects('entity/processingplan', ProcessingPlan, **kwargs)
+class ProcessingPlan(DocumentMS,
+                     GenerateListMixin,
+                     CreateNewMixin,
+                     NameMixin):
 
-    def __init__(self, json):
-        super().__init__(json)
+    _type_name = 'processingplan'
 
-    def create(self, **kwargs):
-        response = MSLowApi.auch_post(f'entity/demand', json=self.get_json(), **kwargs)
-        error_handler(response)
-        self._json = response.json()
