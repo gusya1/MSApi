@@ -8,8 +8,8 @@ from MSApi.ObjectMS import check_init
 class StateMixin:
 
     @classmethod
-    def gen_states_list(cls):
-        response = MSLowApi.auch_get("entity/{}/metadata".format(cls._type_name))
+    def gen_states_list(cls, **kwargs):
+        response = MSLowApi.auch_get("entity/{}/metadata".format(cls._type_name), **kwargs)
         error_handler(response)
         for states_json in response.json()["states"]:
             yield State(states_json)

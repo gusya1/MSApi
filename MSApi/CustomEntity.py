@@ -5,6 +5,8 @@ from MSApi.Meta import Meta
 from MSApi.ObjectMS import ObjectMS, check_init
 from MSApi.MSLowApi import MSLowApi, error_handler, string_to_datetime
 
+from MSApi.mixin.NameMixin import NameMixin
+
 
 class CustomEntityElement(ObjectMS):
 
@@ -33,20 +35,10 @@ class CustomEntityElement(ObjectMS):
         return self._json.get('externalCode')
 
 
-class CustomEntity(ObjectMS):
-    def __init__(self, json):
-        super().__init__(json)
-
-    # @check_init
-    # def get_id(self) -> str:
-    #     return self._json.get('id')
+class CustomEntity(ObjectMS, NameMixin):
 
     def get_entity_meta(self) -> Meta:
         return Meta(self._json.get('entityMeta'))
-
-    @check_init
-    def get_name(self) -> str:
-        return self._json.get('name')
 
     def gen_elements(self):
         elements_json = MSLowApi.get_json_by_href(self.get_entity_meta().get_href())

@@ -17,6 +17,8 @@ class ObjectMS(SubObjectMS):
         super().__init__(json)
 
     def __eq__(self, other):
+        if not issubclass(type(other), ObjectMS):
+            return False
         return self.get_meta() == other.get_meta()
 
     def get_meta(self):
